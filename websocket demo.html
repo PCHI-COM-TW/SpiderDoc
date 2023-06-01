@@ -1,0 +1,90 @@
+cid<input id="cid" type="text" value="108919881"/><br/>
+websocket <input id="websocket" type="text" value="ws://127.0.0.1:443/ws" width="500" /><br/>
+MemberID  <input id="memberid" type="text" value="100001" /><br/>
+Token  <input id="Token" type="text" value="2B753257B2804322A91B6F5EF57A83DF" width="500" /><br/>
+Name  <input id="Name" type="text" value="會員1" /><br/>
+Type  <input id="Type" type="text" value="1" /><br/>
+Talk <input id="Talk" type="text" value="" /><br/>
+Gift <input id="Gift" type="text" value="2" /><br/>
+<hr/>
+<button onclick="openws()">open</button><br/>
+<button onclick="create()">create user</button><br/>
+<button onclick="change()">change</button><br/>
+<button onclick="wsclose()">Close</button><br/>
+<button onclick="talk()">Talk</button><br/>
+<button onclick="Gift()">Gift</button><br/>
+<hr/>
+<pre id="output" style="overflow:auto;"></pre>
+<script>
+//100001	2B753257B2804322A91B6F5EF57A83DF
+//100003	E9FBF4A7270446D883864FDB7B568611
+
+
+	var input = document.getElementById("input");
+	var output = document.getElementById("output");
+	var socket 
+	var obj
+	//socket.close()
+ 
+
+	
+	function create() {
+		
+		obj = {Type:parseInt(document.getElementById("Type").value),
+				Data:{
+				 MemberID:document.getElementById("memberid").value,
+				 Token:document.getElementById("Token").value,
+				 CID:document.getElementById("cid").value,
+				 Name:document.getElementById("Name").value
+				}
+			
+			   }
+				 //console.log(JSON.stringify(obj))
+				 //console.log(socket)
+		socket.send(JSON.stringify(obj))
+	}
+ 
+ 
+	function openws() {
+		socket = new WebSocket(document.getElementById("websocket").value);
+		socket.onopen = function () {
+			output.innerHTML += "Status: Connected\n";
+			 
+		};
+ 
+		socket.onmessage = function (e) {
+			output.innerHTML += "Server: " + e.data + "\n";
+		};
+
+		socket.onclose = function (e) {
+			output.innerHTML += "Server: Close\n";
+		};
+	}
+ 
+	function change() {
+		//type 4
+		var changeobj = {
+			Type:parseInt(document.getElementById("Type").value),
+			Data:{
+				 CID:document.getElementById("cid").value
+				 }
+		}
+		socket.send(JSON.stringify(changeobj));
+	
+	}
+	
+	function talk() {
+	
+		socket.send(JSON.stringify({Type:2,Data:{Text:document.getElementById("Talk").value}}));
+	}
+	
+	function Gift() {
+		socket.send(JSON.stringify({Type:3,Data:{Point:parseInt(document.getElementById("Gift").value)}}));
+	
+	}
+	
+	function wsclose() {
+		socket.close();
+		input.value = "";
+	}
+</script>
